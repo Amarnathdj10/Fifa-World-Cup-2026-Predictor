@@ -1,0 +1,222 @@
+There are 48 teams this world cup.
+
+Asia (9)
+
+Australia
+Iran
+Iraq
+Japan
+Jordan
+Korea Republic
+Qatar
+Saudi Arabia
+Uzbekistan
+
+Africa (10)
+
+Algeria
+Cabo Verde
+Congo DR
+Ivory Coast
+Egypt
+Ghana
+Morocco
+Senegal
+South Africa
+Tunisia
+
+North America (6)
+
+Canada
+Mexico
+USA
+Curacao
+Haiti
+Panama
+
+South America (6)
+
+Argentina
+Brazil
+Colombia
+Ecuador
+Paraguay
+Uruguay
+
+Others (1)
+
+New Zealand
+
+Europe (16)
+
+Austria
+Belgium
+Bosnia and Herzegovina
+Croatia
+Czech Republic
+England
+France
+Germany
+Netherlands
+Norway
+Portugal
+Scotland
+Spain
+Sweden
+Switzerland
+Turkey
+
+# FIFA World Cup 2026 Prediction Engine
+
+## Overview
+
+This project aims to predict the performance of teams in the FIFA World Cup 2026 using Machine Learning and Monte Carlo Simulation.
+
+The model will be trained on historical World Cup data and team performance metrics collected before each tournament. The final system will generate probabilities for each qualified team to win the FIFA World Cup 2026.
+
+---
+
+## Objectives
+
+* Build a dataset of historical World Cup teams and performances.
+* Engineer meaningful features that represent team quality and form.
+* Train machine learning models to predict tournament performance.
+* Simulate the FIFA World Cup 2026 thousands of times using Monte Carlo Simulation.
+* Generate winning probabilities for all participating teams.
+
+---
+
+## Datasets
+
+### 1. World Cup Dataset
+
+```csv
+team,year,host,confederation,elo_rating,squad_form,win_percentage_since_last_cup,goals_scored_per_game,goals_conceded_per_game,wc_appearances,previous_cup_finish,previous_wc_finish,finish_stage
+```
+
+#### Feature Description
+
+| Feature                       | Description                                                   |
+| ----------------------------- | ------------------------------------------------------------- |
+| team                          | National team                                                 |
+| year                          | World Cup year                                                |
+| host                          | Whether the nation hosted the tournament (1/0)                |
+| confederation                 | UEFA, CONMEBOL, AFC, CAF, CONCACAF, OFC                       |
+| elo_rating                    | Team Elo rating before the World Cup                          |
+| squad_form                    | Calculated squad quality score based on player ratings        |
+| win_percentage_since_last_cup | Win percentage between World Cups                             |
+| goals_scored_per_game         | Goals scored per match since the previous World Cup           |
+| goals_conceded_per_game       | Goals conceded per match since the previous World Cup         |
+| wc_appearances                | Number of World Cup appearances before the current tournament |
+| previous_cup_finish           | Result in the most recent continental tournament              |
+| previous_wc_finish            | Result in the previous World Cup                              |
+| finish_stage                  | Final stage reached (Target Variable)                         |
+
+---
+
+### 2. Squad Form Dataset
+
+```csv
+league,team,player,rating
+```
+
+This dataset is used to calculate team-level squad strength.
+
+#### Example
+
+```csv
+Premier League,Argentina,Julian Alvarez,7.62
+La Liga,Argentina,Nahuel Molina,7.18
+Ligue 1,Argentina,Lionel Messi,8.05
+```
+
+---
+
+## Squad Form Calculation
+
+Player ratings will be adjusted using league-strength coefficients.
+
+Example:
+
+| League         | Weight |
+| -------------- | ------ |
+| Premier League | 1.00   |
+| La Liga        | 0.95   |
+| Bundesliga     | 0.93   |
+| Serie A        | 0.92   |
+| Ligue 1        | 0.90   |
+| Eredivisie     | 0.85   |
+| MLS            | 0.75   |
+| A-League       | 0.65   |
+
+Adjusted Rating:
+
+```text
+adjusted_rating = player_rating × league_weight
+```
+
+Squad Form:
+
+```text
+squad_form = average(adjusted_player_ratings)
+```
+
+---
+
+## Machine Learning Pipeline
+
+1. Data Collection
+2. Data Cleaning
+3. Feature Engineering
+4. Model Training
+5. Evaluation
+6. Tournament Simulation
+
+Models to test:
+
+* Logistic Regression
+* Random Forest
+* XGBoost
+
+---
+
+## Monte Carlo Simulation
+
+After training the model:
+
+1. Generate team performance probabilities.
+2. Simulate World Cup group stages.
+3. Simulate knockout rounds.
+4. Repeat thousands of times.
+5. Calculate championship probabilities.
+
+Example Output:
+
+| Team      | Win Probability |
+| --------- | --------------: |
+| France    |           18.3% |
+| Spain     |           15.7% |
+| Argentina |           14.8% |
+| Brazil    |           13.5% |
+
+
+## Team Responsibilities
+
+### Partner 1
+
+* Data collection
+* Squad form dataset preparation
+* Feature engineering
+
+### Partner 2
+
+* Model training
+* Tournament simulation
+* Monte Carlo forecasting
+* Visualization and reporting
+
+---
+
+## Goal
+
+Build a complete forecasting engine capable of estimating the probability of each team winning the FIFA World Cup 2026 using historical performance data, squad quality metrics, and tournament simulations.
