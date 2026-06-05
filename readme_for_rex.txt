@@ -10,6 +10,7 @@ team,year,host,confederation,elo_rating,,win_percentage_since_last_cup,goals_sco
 2. year - world cup year
 3. host - 0 for not host, 1 for host (2014 was hosted by Brazil, 2018 was hosted by Russia, 2022 was hosted by Qatar)
 4. elo_rating - https://eloratings.net/ go to this site, use yearly rating in the right hand side column to collect elo ratings of each team in the concerned year.
+use "starting ratings" for each year, not "final ratings"
 win_percentage_since_last_cup - go to sofascore, choose the required nation, go to matches, scroll to the last world cup game the team played BEFORE the current one,
 count number of matches TILL the first game of the current wc, count no of wins, draws and losses in those matches, and calculate win %, formula : (no of wins/total games)*100
 5. goals_scored_per_game - in THOSE SAME MATCHES as mentioned in the above row, count no of goals scored by the nation, divide it by no of games played.
@@ -26,3 +27,7 @@ world  cup before 2014.) "." means the team didnt qualify, "x" means the team wa
 UPDATE:
 
 I will fill the previous_wc_finish column, no need to stress over it.
+
+UPDATE 2:
+
+I filled the elo ratings columns using a kaggle dataset.

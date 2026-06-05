@@ -54,11 +54,7 @@ for team in afc_teams:
 for team in ofc_teams:
     confederation_map[team] = "OFC"
 
-# Combine teams
-
 all_teams = list(confederation_map.keys())
-
-# World Cup years
 
 years = [2014, 2018, 2022]
 
