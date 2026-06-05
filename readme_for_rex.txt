@@ -22,3 +22,7 @@ world  cup before 2014.) "." means the team didnt qualify, "x" means the team wa
 "4th" for 4th place finish, "3rd" for 3rd place finish, "2nd" for final loss, "1st" for winning the tournament. 
 10. squad_form - to be collected from the squad_form.csv file
 11. finish_stage - this is the tournament finish stage for the CURRENT tournament.
+
+UPDATE:
+
+I will fill the previous_wc_finish column, no need to stress over it.
