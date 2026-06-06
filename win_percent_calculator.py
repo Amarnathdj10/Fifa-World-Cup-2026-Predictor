@@ -4,7 +4,9 @@ import pandas as pd
 df = pd.read_csv("world_cup_dataset.csv")
 
 stats_data = [
-    [37,14,52,49]
+    [37,14,52,49],
+    #[],
+    #[],....
 ]
 
 stats_df = pd.DataFrame(
