@@ -31,3 +31,7 @@ I will fill the previous_wc_finish column, no need to stress over it.
 UPDATE 2:
 
 I filled the elo ratings columns using a kaggle dataset.
+
+UPDATE 3:
+
+Dropping squad form because it's too tedious to create a custom dataset for soooooo many players.
