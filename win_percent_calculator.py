@@ -52,6 +52,22 @@ stats_data = [
     [33,10,36,43,38],#saudi
     [42,20,66,50,69],#uzbekistan
     [23,11,36,33,38],#new zealand
+    [28,13,42,30,46],#austria
+    [34,24,93,35,77],#belgium
+    [25,15,57,33,77],#bosnia
+    [33,19,66,29,64],#croatia
+    [33,14,54,38,49],#czech
+    [34,20,58,24,59],#england
+    [38,26,76,36,83],#france
+    [40,27,103,38,88],#germany
+    [31,17,59,39,55],#netherlands
+    [28,9,33,39,32],#norway
+    [42,29,94,33,92],#portugal
+    [24,11,39,26,39],#scotland
+    [34,24,81,21,78],#spain
+    [38,19,69,32,63],#sweden
+    [31,20,59,30,64],#switzerland
+    [33,18,48,31,61]#turkey
 ]
 
 stats_df = pd.DataFrame(
