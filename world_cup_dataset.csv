@@ -1,6 +1,6 @@
 team,year,host,confederation,elo_rating,win_percentage_since_last_cup,goals_scored_per_game,goals_conceded_per_game,points_per_game,previous_wc_finish,finish_stage,goalkeeper_value,defense_value,midfield_value,attack_value,squad_value
 Austria,2014,0,UEFA,1662.0,0.38,1.48,1.41,1.1,,,3.7,44.8,16.7,30.33,95.53
-Belgium,2014,0,UEFA,1835.0,0.52,1.65,0.94,1.87,,,,,,,
+Belgium,2014,0,UEFA,1835.0,0.52,1.65,0.94,1.87,,,24.5,101.2,108.75,98.9,333.35
 Bosnia and Herzegovina,2014,0,UEFA,1783.0,0.55,1.93,1.03,1.79,,,,,,,
 Croatia,2014,0,UEFA,1806.0,0.5,1.5,0.97,1.74,,,,,,,
 Czech Republic,2014,0,UEFA,1728.0,0.43,1.34,1.0,1.54,,,,,,,

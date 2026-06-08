@@ -6,7 +6,7 @@ squad_values = [
     # gk, defense, midfield, attack
 
     [3.70,44.80,16.70,30.33],   # Austria 2014
-    []  # Belgium 2014
+    [24.50,101.20,108.75,98.90]  # Belgium 2014
 
     
 ]
