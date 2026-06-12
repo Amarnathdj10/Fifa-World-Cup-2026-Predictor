@@ -12,7 +12,7 @@ squad_values = [
     [31,40.35,35.6,17],#czech 2014
     [37.25,193,138,160.5],#england 2014
     [45.5,174,142,160],#france 2014
-    [],#germany 2014
+    [59,133.5,235.5,150.5],#germany 2014
     [],#netherlands 2014
     [],#norway 2014
     [],#portugal 2014
@@ -28,7 +28,7 @@ squad_values = [
     [7,26.8,31.73,11.3],#czech 2018
     [43.25,232,152.8,176.5],#england 2018
     [51.5,216.5,270,255],#france 2018
-    [],#germany 2018
+    [44,209.5,275.75,193.5],#germany 2018
     [],#netherlands 2018
     [],#norway 2018
     [],#portugal 2018
