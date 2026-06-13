@@ -85,7 +85,7 @@ stats_df["squad_value"] = (
     + stats_df["defense_value"]
     + stats_df["midfield_value"]
     + stats_df["attack_value"]
-)
+).round(2)
 
 wc_df["goalkeeper_value"] = stats_df["goalkeeper_value"]
 wc_df["defense_value"] = stats_df["defense_value"]
