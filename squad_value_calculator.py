@@ -21,6 +21,22 @@ squad_values = [
     [10.4,35.4,26.15,55.9],#sweden 2014
     [11,47.75,68.5,22.75],#switzerland 2014
     [29.35,58.7,59.4,74.65],#turkey 2014
+    [],#arg 2014
+    [], #brazil 2014
+    [], #colombia 2014
+    [], #ecuador 2014
+    [], #paraguay 2014
+    [], #uruguay 2014
+    [], #algeria 2014
+    [], #cabo 2014
+    [], #congo 2014
+    [], #ivory coast 2014
+    [], #egyppt 2014
+    [], #ghana 2014
+    [], #morocco 2014
+    [], #senegal 2014
+    [], #sa 2014
+    [], #tunisia 2014
     [3.98,91.35,46.45,22.10],#austria 2018
     [56.5,106.75,186,255.5],#belgium
     [11.5,22.55,65.95,34.65],#bosnia 2018
