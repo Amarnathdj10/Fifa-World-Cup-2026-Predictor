@@ -13,7 +13,7 @@ squad_values = [
     [37.25,193,138,160.5],#england 2014
     [45.5,174,142,160],#france 2014
     [59,133.5,235.5,150.5],#germany 2014
-    [],#netherlands 2014
+    [33.5,55.95,118.55,135],#netherlands 2014
     [],#norway 2014
     [],#portugal 2014
     [],#scotland 2014
@@ -29,7 +29,7 @@ squad_values = [
     [43.25,232,152.8,176.5],#england 2018
     [51.5,216.5,270,255],#france 2018
     [44,209.5,275.75,193.5],#germany 2018
-    [],#netherlands 2018
+    [30.5,108.85,100,126.5],#netherlands 2018
     [],#norway 2018
     [],#portugal 2018
     [],#scotland 2018
@@ -44,7 +44,7 @@ squad_values = [
     [80.5,483,289.7,630],#england 2022
     [51,545,338.5,551],#france 2022
     [],#germany 2022
-    [],#netherlands 2022
+    [31.05,325.7,237,197.5],#netherlands 2022
     [],#norway 2022
     [],#portugal 2022
     [],#scotland 2022
