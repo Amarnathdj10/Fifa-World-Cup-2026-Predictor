@@ -1,0 +1,55 @@
+# 📊 EDA Report: FIFA World Cup Predictor (Updated)
+
+The dataset has been successfully updated with historical results (`finish_stage`) and performance metrics (goals, win %, points). This analysis reveals the underlying patterns that will power the XGBoost model.
+
+## 📈 Key Insights Summary
+
+- **Elo is King**: `elo_rating` has the strongest correlation (**0.68**) with tournament success. To win the World Cup, a team typically needs an Elo rating above **2070**.
+- **Defense Matters**: `goals_conceded_per_game` has a significant negative correlation (**-0.35**), confirming that keeping clean sheets is vital for progressing through knockout stages.
+- **Form Persistence**: Success in the previous World Cup (**0.51**) is a better predictor of success than current winning percentages (**0.48**), suggesting "tournament pedigree" is a real factor.
+
+---
+
+## 🖼️ Visual Analysis
+
+````carousel
+![Correlation Matrix](C:\Users\megii\.gemini\antigravity\brain\6fc001cc-6efd-471d-83df-c0e1c3515e81\correlation_matrix.png)
+<!-- slide -->
+![Elo vs Finish Stage](C:\Users\megii\.gemini\antigravity\brain\6fc001cc-6efd-471d-83df-c0e1c3515e81\elo_vs_finish.png)
+<!-- slide -->
+![Confederation Performance](C:\Users\megii\.gemini\antigravity\brain\6fc001cc-6efd-471d-83df-c0e1c3515e81\confed_performance.png)
+<!-- slide -->
+![Goals vs Finish Stage](C:\Users\megii\.gemini\antigravity\brain\6fc001cc-6efd-471d-83df-c0e1c3515e81\goals_vs_finish.png)
+````
+
+---
+
+## 🔢 Feature Importance (Correlation)
+
+| Feature | Correlation with `finish_stage` | Strength |
+| :--- | :---: | :--- |
+| **Elo Rating** | 0.68 | Very High |
+| **Previous WC Finish** | 0.51 | High |
+| **Win % Since Last Cup** | 0.48 | Moderate-High |
+| **Goals Scored/Game** | 0.46 | Moderate |
+| **Points Per Game** | 0.46 | Moderate |
+| **Goals Conceded/Game** | -0.35 | Moderate (Inverse) |
+| **Host Status** | 0.12 | Low |
+
+---
+
+## 🏆 The "Winner's Profile"
+
+Based on the average stats of teams that reached Stage 7 (Final Winners: Germany 2014, France 2018, Argentina 2022):
+
+- **Avg Elo**: 2074.33
+- **Avg Goals Scored**: ~2.2+ per game
+- **Avg Goals Conceded**: < 0.9 per game
+- **Avg WC Pedigree**: Usually reached at least the Quarter-Finals in the previous edition.
+
+## 🚀 Recommendation for XGBoost Tuning
+
+Based on this EDA, I recommend:
+1.  **Weighted Features**: Give higher importance to `elo_rating` and `previous_wc_finish`.
+2.  **Interaction Terms**: Create a feature that combines `elo_rating` and `host` status to capture the "Host Boost" which is currently undervalued in the raw correlation.
+3.  **Handle Ordinality**: Since `finish_stage` ranges from 1 to 7, using `XGBRegressor` might be more effective than a standard Classifier to respect the progression.
