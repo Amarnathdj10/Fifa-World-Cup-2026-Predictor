@@ -26,5 +26,8 @@ df.to_csv('world_cup_dataset.csv',index=False)
 
 #df = df.drop(columns=['points_per_match'])
 
-df = df.drop(columns=['squad_value'])
+#df = df.drop(columns=['squad_value'])
+#df.to_csv('world_cup_dataset.csv',index=False)
+
+df = df.drop(columns=['goalkeeper_value','defense_value','midfield_value','attack_value','squad_value'])
 df.to_csv('world_cup_dataset.csv',index=False)

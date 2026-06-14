@@ -21,7 +21,7 @@ squad_values = [
     [10.4,35.4,26.15,55.9],#sweden 2014
     [11,47.75,68.5,22.75],#switzerland 2014
     [29.35,58.7,59.4,74.65],#turkey 2014
-    [],#arg 2014
+    [], #arg 2014
     [], #brazil 2014
     [], #colombia 2014
     [], #ecuador 2014
@@ -53,6 +53,22 @@ squad_values = [
     [6.3,44.95,22.15,33.15],#sweden 2018
     [23.6,66.75,77.5,49.35],#switzerland 2018
     [19.88,74.3,93.3,72],#turkey 2018
+    [], #arg 2014
+    [], #brazil 2014
+    [], #colombia 2014
+    [], #ecuador 2014
+    [], #paraguay 2014
+    [], #uruguay 2014
+    [], #algeria 2014
+    [], #cabo 2014
+    [], #congo 2014
+    [], #ivory coast 2014
+    [], #egyppt 2014
+    [], #ghana 2014
+    [], #morocco 2014
+    [], #senegal 2014
+    [], #sa 2014
+    [], #tunisia 2014
     [7,167.6,123.1,61.4],#austria 2022
     [1.98,25.48,81.38,19.1],#bosnia 2022
     [24.9,99.7,207,97.5],#croatia 2022
@@ -68,6 +84,22 @@ squad_values = [
     [4.225,59,70.7,87.5],#sweden 2022
     [26.7,103.6,128,74.3],#switzerland 2022
     [47.9,122.05,124.18,95.7],#turkey 2022
+    [], #arg 2014
+    [], #brazil 2014
+    [], #colombia 2014
+    [], #ecuador 2014
+    [], #paraguay 2014
+    [], #uruguay 2014
+    [], #algeria 2014
+    [], #cabo 2014
+    [], #congo 2014
+    [], #ivory coast 2014
+    [], #egyppt 2014
+    [], #ghana 2014
+    [], #morocco 2014
+    [], #senegal 2014
+    [], #sa 2014
+    [], #tunisia 2014
 ]
 
 stats_df = pd.DataFrame(
