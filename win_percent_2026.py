@@ -41,14 +41,14 @@ stats = [
     [29,12,66,33,45], #curacao
     [31,17,74,37,58], #haiti
     [47,26,85,65,85], #panama
-    [], #australia
-    [], #iran
-    [], #iraq
-    [], #japan
-    [], #jordan
-    [], #korea
-    [], #qatar
-    [], #saudi
-    [],#uzbekistan
-    [], #new zealand
+    [34,20,63,25,66], #australia
+    [39,28,98,41,90], #iran
+    [45,27,97,60,87], #iraq
+    [39,31,116,26,92], #japan
+    [43,21,81,56,71], #jordan
+    [40,24,85,34,83], #korea
+    [46,21,78,75,72], #qatar
+    [49,19,60,57,68], #saudi
+    [40,25,76,35,85],#uzbekistan
+    [30,13,62,33,44], #new zealand
 ]
