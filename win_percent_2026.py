@@ -35,12 +35,12 @@ stats = [
     [48,33,101,34,109], #senegal
     [42,21,75,45,79], #sa
     [43,23,71,39,79], #tunisia
-    [], #canada
-    [], #mexico
-    [], #usa
-    [], #curacao
-    [], #haiti
-    [], #panama
+    [39,19,85,59,65], #canada
+    [49,24,65,53,85], #mexico
+    [50,28,110,63,90], #usa
+    [29,12,66,33,45], #curacao
+    [31,17,74,37,58], #haiti
+    [47,26,85,65,85], #panama
     [], #australia
     [], #iran
     [], #iraq
