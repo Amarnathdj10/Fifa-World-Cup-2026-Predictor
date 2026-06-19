@@ -25,16 +25,16 @@ stats = [
     [35,16,39,25,60], #ecuador
     [30,10,27,31,39], #paraguay
     [36,18,60,33,65], #uruguay
-    [], #algeria
-    [], #cabo
-    [], #congo
-    [], #ivory
-    [], #egypt
-    [], #ghana
-    [], #morocco
-    [], #senegal
-    [], #sa
-    [], #tunisia
+    [55,35,119,60,117], #algeria
+    [35,16,47,40,56], #cabo
+    [48,26,72,44,89], #congo
+    [42,26,76,35,85], #ivory
+    [40,23,73,37,81], #egypt
+    [36,13,50,52,49], #ghana
+    [49,39,108,24,124], #morocco
+    [48,33,101,34,109], #senegal
+    [42,21,75,45,79], #sa
+    [43,23,71,39,79], #tunisia
     [], #canada
     [], #mexico
     [], #usa
