@@ -19,12 +19,12 @@ stats = [
     [33,17,65,47,55], #sweden
     [35,15,61,41,59], #sswitz
     [35,19,63,51,63], #turkeey
-    [], #argentina
-    [], #brazil
-    [], #colombia
-    [], #ecuador
-    [], #paraguay
-    [], #uruguay
+    [35,29,77,15,89], #argentina
+    [33,14,56,40,51], #brazil
+    [39,23,72,30,80], #colombia
+    [35,16,39,25,60], #ecuador
+    [30,10,27,31,39], #paraguay
+    [36,18,60,33,65], #uruguay
     [], #algeria
     [], #cabo
     [], #congo
