@@ -1,0 +1,5 @@
+--- FINAL MODEL METRICS (Method 1) ---
+Mean Absolute Error (MAE): 0.6760
+R-Squared (R2): 0.4504
+Root Mean Squared Error (RMSE): 1.0751
+Note: Confusion Matrix saved as confusion_matrix.png
