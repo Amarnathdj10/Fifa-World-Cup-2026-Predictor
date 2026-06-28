@@ -2,7 +2,7 @@ import pandas as pd
 
 df = pd.read_csv('prediction_dataset.csv')
 
-stats = [
+stats  = [
     [34,21,75,29,70], #austria
     [34,18,74,29,63], #belgium
     [29,9,16,53,31], #bosnia
@@ -10,7 +10,7 @@ stats = [
     [33,18,52,34,63], #czechia
     [37,27,76,24,86], #england
     [36,24,90,37,78], #france
-    [36,19,74,43,64]  #germany
+    [36,19,74,43,64],  #germany
     [36,20,93,44,67], #netherlands
     [30,19,82,37,62], #norway
     [36,27,107,39,84], #portugal
@@ -52,3 +52,33 @@ stats = [
     [40,25,76,35,85],#uzbekistan
     [30,13,62,33,44], #new zealand
 ]
+
+stats_df = pd.DataFrame(
+    stats,
+    columns=[
+        "matches_played",
+        "wins",
+        "goals_scored",
+        "goals_conceded",
+        "points"
+    ]
+)
+
+df["win_percentage_since_last_cup"] = (
+    stats_df["wins"] / stats_df["matches_played"]
+).round(2)
+
+df["goals_scored_per_game"] = (
+    stats_df["goals_scored"] / stats_df["matches_played"]
+).round(2)
+
+df["goals_conceded_per_game"] = (
+    stats_df["goals_conceded"] / stats_df["matches_played"]
+).round(2)
+
+df["points_per_game"] = (
+    stats_df["points"] / stats_df["matches_played"]
+).round(2)
+
+# Save
+df.to_csv("prediction_dataset.csv", index=False)
