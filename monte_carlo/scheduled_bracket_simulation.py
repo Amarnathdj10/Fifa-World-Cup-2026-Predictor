@@ -10,6 +10,8 @@ predictions_path = os.path.join(base_path, "finalmodel", "final_predictions_2026
 def load_teams():
     df = pd.read_csv(predictions_path)
     df.columns = [c.strip() for c in df.columns]
+    # Create hybrid strength metric combining Elo and ML predictions
+    df['Strength'] = df['Elo_Rating'] + df['Predicted_Stage'] * 50
     return df
 
 # Official 2026 Groups (Mapped to CSV names)
@@ -28,10 +30,13 @@ OFFICIAL_GROUPS = {
     'L': ['England', 'Croatia', 'Ghana', 'Panama']
 }
 
-def simulate_match(team1_rating, team2_rating, is_knockout=False):
+def simulate_match(team1_strength, team2_strength, is_knockout=False):
+    """
+    Simulates a match between two teams using their hybrid Strength ratings.
+    """
     base_avg_goals = 1.4
-    elo_diff = team1_rating - team2_rating
-    diff_adjustment = (elo_diff / 100) * 0.2
+    strength_diff = team1_strength - team2_strength
+    diff_adjustment = (strength_diff / 100) * 0.2
     
     t1_lambda = max(0.1, base_avg_goals + diff_adjustment)
     t2_lambda = max(0.1, base_avg_goals - diff_adjustment)
@@ -45,7 +50,7 @@ def simulate_match(team1_rating, team2_rating, is_knockout=False):
         return t1_goals, t2_goals, 1
     else:
         if is_knockout:
-            win_prob = 1 / (1 + 10**(-elo_diff / 400))
+            win_prob = 1 / (1 + 10**(-strength_diff / 400))
             winner = 0 if random.random() < win_prob else 1
             return t1_goals, t2_goals, winner
         return t1_goals, t2_goals, 2
@@ -71,7 +76,7 @@ def simulate_group_stage(groups):
         for i in range(len(teams)):
             for j in range(i + 1, len(teams)):
                 t1, t2 = teams[i], teams[j]
-                g1, g2, winner = simulate_match(t1['Elo_Rating'], t2['Elo_Rating'])
+                g1, g2, winner = simulate_match(t1['Strength'], t2['Strength'])
                 stats[t1['Team']]['goals_for'] += g1
                 stats[t1['Team']]['goals_against'] += g2
                 stats[t2['Team']]['goals_for'] += g2
@@ -108,7 +113,7 @@ def simulate_scheduled_knockout(positions, best_thirds):
     """
     Simulates the knockout stage using a fixed bracket logic.
     """
-    # Round of 32 Pairing Logic (Structured approximation)
+    # Round of 32 Pairing Logic (Structured approximation based on typical FIFA formats)
     r32_matches = [
         (positions['A1'], best_thirds[0]), (positions['B1'], best_thirds[1]),
         (positions['C1'], best_thirds[2]), (positions['D1'], best_thirds[3]),
@@ -125,7 +130,7 @@ def simulate_scheduled_knockout(positions, best_thirds):
     # R32 -> R16
     r16_teams = []
     for t1, t2 in r32_matches:
-        _, _, w = simulate_match(t1['Elo_Rating'], t2['Elo_Rating'], is_knockout=True)
+        _, _, w = simulate_match(t1['Strength'], t2['Strength'], is_knockout=True)
         winner = t1 if w == 0 else t2
         r16_teams.append(winner)
         stages['R16'].append(winner['Team'])
@@ -134,7 +139,7 @@ def simulate_scheduled_knockout(positions, best_thirds):
     qf_teams = []
     for i in range(0, len(r16_teams), 2):
         t1, t2 = r16_teams[i], r16_teams[i+1]
-        _, _, w = simulate_match(t1['Elo_Rating'], t2['Elo_Rating'], is_knockout=True)
+        _, _, w = simulate_match(t1['Strength'], t2['Strength'], is_knockout=True)
         winner = t1 if w == 0 else t2
         qf_teams.append(winner)
         stages['QF'].append(winner['Team'])
@@ -143,7 +148,7 @@ def simulate_scheduled_knockout(positions, best_thirds):
     sf_teams = []
     for i in range(0, len(qf_teams), 2):
         t1, t2 = qf_teams[i], qf_teams[i+1]
-        _, _, w = simulate_match(t1['Elo_Rating'], t2['Elo_Rating'], is_knockout=True)
+        _, _, w = simulate_match(t1['Strength'], t2['Strength'], is_knockout=True)
         winner = t1 if w == 0 else t2
         sf_teams.append(winner)
         stages['SF'].append(winner['Team'])
@@ -152,20 +157,20 @@ def simulate_scheduled_knockout(positions, best_thirds):
     final_teams = []
     for i in range(0, len(sf_teams), 2):
         t1, t2 = sf_teams[i], sf_teams[i+1]
-        _, _, w = simulate_match(t1['Elo_Rating'], t2['Elo_Rating'], is_knockout=True)
+        _, _, w = simulate_match(t1['Strength'], t2['Strength'], is_knockout=True)
         winner = t1 if w == 0 else t2
         final_teams.append(winner)
         stages['Final'].append(winner['Team'])
         
     # Final
     t1, t2 = final_teams[0], final_teams[1]
-    _, _, w = simulate_match(t1['Elo_Rating'], t2['Elo_Rating'], is_knockout=True)
+    _, _, w = simulate_match(t1['Strength'], t2['Strength'], is_knockout=True)
     winner = t1 if w == 0 else t2
     stages['Winner'] = winner['Team']
     
     return stages
 
-def run_monte_carlo(num_simulations=1000):
+def run_monte_carlo(num_simulations=10000):
     df = load_teams()
     team_names = df['Team'].tolist()
     stats = {team: {'R32': 0, 'R16': 0, 'QF': 0, 'SF': 0, 'Final': 0, 'Winner': 0} for team in team_names}
@@ -186,20 +191,24 @@ def run_monte_carlo(num_simulations=1000):
                 stats[team][stage] += 1
         stats[results['Winner']]['Winner'] += 1
         
-        if (i+1) % 100 == 0: print(f"Progress: {i+1}/{num_simulations}")
+        if (i+1) % 1000 == 0:
+            print(f"Progress: {i+1}/{num_simulations}")
             
     results_list = []
     for team, stages in stats.items():
         row = {'Team': team}
-        for st, count in stages.items(): row[f'{st}_prob'] = count / num_simulations
+        for st, count in stages.items(): 
+            row[f'{st}_prob'] = count / num_simulations
         results_list.append(row)
     
     return pd.DataFrame(results_list).sort_values('Winner_prob', ascending=False)
 
 if __name__ == "__main__":
-    results = run_monte_carlo(1000)
+    num_sims = 10000 # Increased to 10,000 for standard Monte Carlo statistical precision
+    results = run_monte_carlo(num_sims)
     output_path = os.path.join(base_path, "monte_carlo", "scheduled_results_2026.csv")
     results.to_csv(output_path, index=False)
+    
     print(f"\nScheduled Simulation Complete. Results saved to: {output_path}")
     print("\nTop 10 Teams by Scheduled Win Probability:")
-    print(results[['Team', 'Winner_prob', 'Final_prob', 'SF_prob']].head(10))
+    print(results[['Team', 'Winner_prob', 'Final_prob', 'SF_prob']].head(10).to_string(index=False))

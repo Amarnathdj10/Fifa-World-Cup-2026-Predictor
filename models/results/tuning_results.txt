@@ -1,0 +1,5 @@
+Random Forest Best Params: {'max_depth': None, 'max_features': None, 'min_samples_split': 10, 'n_estimators': 50}
+Random Forest MAE: 0.6623
+
+XGBoost Best Params: {'learning_rate': 0.05, 'max_depth': 3, 'n_estimators': 50, 'subsample': 0.7}
+XGBoost MAE: 0.7317

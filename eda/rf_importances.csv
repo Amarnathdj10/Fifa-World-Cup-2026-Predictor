@@ -1,0 +1,11 @@
+Feature,Importance
+elo_rating,0.4320870501484071
+elo_host_boost,0.15756474698852585
+goals_conceded_per_game,0.13805752515017386
+points_per_game,0.07972082913510162
+attack_efficiency,0.06754818652148478
+goals_scored_per_game,0.04091537717401658
+win_percentage_since_last_cup,0.03666440105308199
+previous_wc_finish,0.0319065563822671
+confederation_encoded,0.014787168363040133
+host,0.0007481590839008305
