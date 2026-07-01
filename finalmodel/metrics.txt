@@ -1,5 +1,6 @@
---- FINAL MODEL METRICS (Method 1) ---
-Mean Absolute Error (MAE): 0.6760
-R-Squared (R2): 0.4504
-Root Mean Squared Error (RMSE): 1.0751
-Note: Confusion Matrix saved as confusion_matrix.png
+=== MODEL COMPARISON SUMMARY ===
+XGBoost: MAE=0.6760, RMSE=1.0751, R2=0.4504
+Random Forest: MAE=0.6856, RMSE=1.0936, R2=0.4275
+Ridge Regression: MAE=0.7864, RMSE=1.0836, R2=0.4393
+
+Selected Best Model: XGBoost
