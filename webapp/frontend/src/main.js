@@ -5,6 +5,42 @@
 
 const API = '/api';
 
+const TEAM_CODES = {
+  'Argentina': 'ar', 'Australia': 'au', 'Austria': 'at',
+  'Algeria': 'dz', 'Belgium': 'be', 'Bosnia and Herzegovina': 'ba',
+  'Brazil': 'br', 'Cabo Verde': 'cv', 'Canada': 'ca',
+  'Colombia': 'co', 'Congo DR': 'cd', 'Croatia': 'hr',
+  'Curacao': 'cw', 'Czech Republic': 'cz', 'Ecuador': 'ec',
+  'Egypt': 'eg', 'England': 'gb-eng', 'France': 'fr',
+  'Germany': 'de', 'Ghana': 'gh', 'Haiti': 'ht',
+  'Iran': 'ir', 'Iraq': 'iq', 'Ivory Coast': 'ci',
+  'Japan': 'jp', 'Jordan': 'jo', 'Korea Republic': 'kr',
+  'Mexico': 'mx', 'Morocco': 'ma', 'Netherlands': 'nl',
+  'New Zealand': 'nz', 'Norway': 'no', 'Panama': 'pa',
+  'Paraguay': 'py', 'Portugal': 'pt', 'Qatar': 'qa',
+  'Saudi Arabia': 'sa', 'Scotland': 'gb-sct', 'Senegal': 'sn',
+  'South Africa': 'za', 'Spain': 'es', 'Sweden': 'se',
+  'Switzerland': 'ch', 'Tunisia': 'tn', 'Turkey': 'tr',
+  'Uruguay': 'uy', 'USA': 'us', 'Uzbekistan': 'uz'
+};
+
+function cleanCountryName(name) {
+  if (!name) return '';
+  const mapping = {
+    'USA': 'United States',
+    'Congo DR': 'Democratic Republic of the Congo'
+  };
+  return mapping[name] || name;
+}
+
+function getFlagHtml(teamName, className = '') {
+  const code = TEAM_CODES[teamName];
+  if (code) {
+    return `<img src="https://flagcdn.com/w80/${code}.png" alt="${teamName}" class="flag-img ${className}" />`;
+  }
+  return '🏳️';
+}
+
 // ── State ────────────────────────────────────────────────────────────────────
 const state = {
   mode: 'random',
@@ -272,8 +308,8 @@ function renderPodium() {
   podiumEl.innerHTML = top3.map((t, i) => `
     <div class="podium-card ${rankClass[i]} anim-fade-up" style="animation-delay:${i*0.12}s">
       <div class="podium-medal">${medals[i]}</div>
-      <div class="podium-flag">${t.flag}</div>
-      <div class="podium-name">${t.Team}</div>
+      <div class="podium-flag">${getFlagHtml(t.Team, 'flag-podium')}</div>
+      <div class="podium-name">${cleanCountryName(t.Team)}</div>
       <div class="podium-conf">${t.confederation}</div>
       <div class="podium-prob">${(t.Winner_prob * 100).toFixed(1)}%</div>
       <div class="podium-prob-lbl">Win Probability</div>
@@ -312,9 +348,9 @@ function renderChart() {
       <div class="chart-row">
         <span class="chart-rank">${idx + 1}</span>
         <div class="chart-team-info">
-          <span class="chart-flag">${t.flag}</span>
+          <span class="chart-flag">${getFlagHtml(t.Team, 'flag-chart')}</span>
           <div>
-            <div class="chart-name">${t.Team}</div>
+            <div class="chart-name">${cleanCountryName(t.Team)}</div>
             <span class="chart-conf-badge conf-${conf}">${conf}</span>
           </div>
         </div>
@@ -346,9 +382,9 @@ function renderGroupsGrid() {
       </div>
       ${teams.map(t => `
         <div class="group-team-row">
-          <span class="group-team-flag">${t.flag}</span>
+          <span class="group-team-flag">${getFlagHtml(t.team, 'flag-group')}</span>
           <div class="group-team-info">
-            <div class="group-team-name">${t.team}</div>
+            <div class="group-team-name">${cleanCountryName(t.team)}</div>
             <div class="group-team-elo">Elo ${t.elo} · <span class="chart-conf-badge conf-${t.confederation}">${t.confederation}</span></div>
           </div>
           <span class="group-team-strength">${t.strength.toFixed(0)}</span>
@@ -362,9 +398,9 @@ function renderGroupsGrid() {
 function renderTeamsGrid() {
   teamsGrid.innerHTML = state.teams.map((t, i) => `
     <div class="team-card anim-fade-up" style="animation-delay:${(i % 12) * 0.04}s">
-      <div class="team-card-flag">${t.flag}</div>
+      <div class="team-card-flag">${getFlagHtml(t.team, 'flag-card')}</div>
       <div class="team-card-rank">#${i + 1}</div>
-      <div class="team-card-name">${t.team}</div>
+      <div class="team-card-name">${cleanCountryName(t.team)}</div>
       <span class="team-card-conf team-card-conf conf-${t.confederation}">${t.confederation}</span>
       <div class="team-card-stats">
         <div class="team-stat-item">
@@ -372,8 +408,8 @@ function renderTeamsGrid() {
           <div class="team-stat-lbl">Elo</div>
         </div>
         <div class="team-stat-item">
-          <div class="team-stat-val">${t.predicted_stage.toFixed(1)}</div>
-          <div class="team-stat-lbl">ML Stage</div>
+          <div class="team-stat-val">${t.strength.toFixed(0)}</div>
+          <div class="team-stat-lbl">Strength</div>
         </div>
       </div>
     </div>
