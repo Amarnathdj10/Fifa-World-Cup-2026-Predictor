@@ -3,7 +3,7 @@
  * All UI logic: API calls, chart rendering, simulation control, canvas BG
  */
 
-const API = '/api';
+const API = import.meta.env.VITE_API_BASE || '/api';
 
 const TEAM_CODES = {
   'Argentina': 'ar', 'Australia': 'au', 'Austria': 'at',

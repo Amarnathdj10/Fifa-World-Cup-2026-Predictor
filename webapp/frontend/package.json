@@ -1,6 +1,7 @@
 {
   "name": "wc2026-predictor-frontend",
   "version": "1.0.0",
+  "type": "module",
   "description": "FIFA World Cup 2026 Predictor — Frontend",
   "scripts": {
     "dev": "vite --port 5173",
