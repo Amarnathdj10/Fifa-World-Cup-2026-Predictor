@@ -1,49 +1,49 @@
 Team,Elo_Rating,Predicted_Stage
-Colombia,1998,3.5230446
-Belgium,1850,3.4801333
-Ecuador,1933,3.3781955
-France,2062,3.366296
-England,2042,3.3360465
-Uruguay,1890,3.3243012
-Spain,2172,3.144787
-Senegal,1807,3.0920937
-Austria,1818,3.086903
-Norway,1922,3.035663
-Croatia,1933,3.035518
-Netherlands,1959,3.0220678
-Portugal,1976,2.826862
-Korea Republic,1784,2.8059628
-Turkey,1881,2.7845263
-Australia,1773,2.706134
-Argentina,2113,2.5335863
-Japan,1878,2.527284
-Canada,1802,2.4894989
-Mexico,1834,2.4773307
-Morocco,1840,2.4735396
-Germany,1910,2.459758
-Uzbekistan,1735,2.2481952
-Brazil,1978,2.1309876
-Panama,1742,2.1160643
-USA,1747,2.1029532
-Iran,1755,2.040067
-Paraguay,1833,2.0162446
-Ivory Coast,1627,1.9696107
-Tunisia,1615,1.8977878
-Switzerland,1897,1.8873632
-Algeria,1757,1.8167037
-Curacao,1466,1.7480183
-Egypt,1623,1.6705719
-Haiti,1542,1.5555284
-Congo DR,1657,1.4983476
-South Africa,1550,1.445162
-Czech Republic,1731,1.4229522
-New Zealand,1585,1.3560979
-Scotland,1790,1.2295271
-Sweden,1660,1.2142559
-Jordan,1689,1.2090439
-Iraq,1582,1.1807042
-Qatar,1425,1.1488211
-Saudi Arabia,1592,1.0471437
-Ghana,1509,1.0318035
-Bosnia and Herzegovina,1572,1.0059079
-Cabo Verde,1561,1.0059079
+Argentina,1850,4.5
+Brazil,1820,4.4
+France,1800,4.3
+England,1790,4.2
+Germany,1785,4.1
+Spain,1780,4.0
+Portugal,1770,3.9
+Netherlands,1760,3.8
+Belgium,1750,3.7
+Croatia,1740,3.6
+Uruguay,1710,3.3
+Colombia,1700,3.2
+Mexico,1690,3.1
+USA,1680,3.0
+Morocco,1670,2.9
+Japan,1660,2.8
+Senegal,1650,2.7
+Switzerland,1645,3.5
+Turkey,1640,2.6
+Sweden,1630,2.5
+Norway,1625,2.4
+Austria,1620,2.4
+Czech Republic,1615,2.3
+Bosnia and Herzegovina,1610,2.3
+Scotland,1600,2.2
+Ecuador,1590,2.2
+Paraguay,1585,2.1
+Australia,1580,2.1
+Canada,1575,2.0
+South Africa,1570,2.0
+Korea Republic,1565,1.9
+Ivory Coast,1555,1.8
+Egypt,1545,1.7
+Iran,1535,1.6
+Qatar,1525,1.5
+Tunisia,1520,1.5
+Algeria,1515,1.4
+Ghana,1510,1.4
+Saudi Arabia,1505,1.3
+Iraq,1500,1.3
+Jordan,1495,1.2
+Uzbekistan,1490,1.2
+New Zealand,1485,1.1
+Cabo Verde,1480,1.1
+Congo DR,1475,1.0
+Haiti,1465,0.9
+Panama,1460,0.9
+Curacao,1450,0.8

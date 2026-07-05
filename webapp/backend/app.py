@@ -11,6 +11,7 @@ from simulation import (
     get_teams_data,
     get_groups_data,
     load_results,
+    load_bracket,
     run_random_simulation,
     run_scheduled_simulation,
 )
@@ -66,6 +67,15 @@ def results_scheduled():
     try:
         data = load_results('scheduled')
         return jsonify({'results': data, 'mode': 'scheduled'})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.get('/api/bracket/<mode>')
+def bracket(mode):
+    try:
+        data = load_bracket('scheduled' if mode == 'scheduled' else 'random')
+        return jsonify({'bracket': data, 'mode': mode})
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 

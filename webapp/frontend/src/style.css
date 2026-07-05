@@ -541,6 +541,61 @@ input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.2); }
 .bar-OFC      { background: linear-gradient(90deg, #14b8a6, #2dd4bf); }
 
 /* ═══════════════════════════════════════════════════════
+   BRACKET
+════════════════════════════════════════════════════════ */
+#bracket { background: var(--bg2); }
+
+.bracket-controls {
+  display: flex; align-items: center; justify-content: center;
+  gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap;
+}
+.bracket-nav-btn {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: var(--surface); border: 1px solid var(--border);
+  color: var(--text); font-size: 1.2rem; cursor: pointer;
+  transition: all 0.2s;
+}
+.bracket-nav-btn:hover { border-color: var(--gold); color: var(--gold); }
+.bracket-round-tabs { display: flex; flex-wrap: wrap; gap: 0.5rem; justify-content: center; }
+.bracket-tab {
+  padding: 0.45rem 1.1rem;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 99px; color: var(--text-muted);
+  font-size: 0.75rem; font-weight: 700; letter-spacing: 0.05em;
+  cursor: pointer; transition: all 0.2s;
+}
+.bracket-tab:hover { border-color: var(--border-h); color: var(--text); }
+.bracket-tab.active {
+  background: var(--gold-dim); border-color: rgba(245,200,66,0.5);
+  color: var(--gold);
+}
+
+.bracket-matches {
+  max-width: 720px; margin: 0 auto;
+  border-radius: var(--radius-xl); padding: 1.5rem;
+  display: flex; flex-direction: column; gap: 1rem;
+}
+.bracket-match {
+  background: var(--bg3); border: 1px solid var(--border);
+  border-radius: var(--radius); overflow: hidden;
+}
+.bracket-team {
+  display: grid; grid-template-columns: 1.6rem 1fr 2rem;
+  align-items: center; gap: 0.75rem;
+  padding: 0.65rem 1rem;
+  color: var(--text-muted); font-size: 0.85rem; font-weight: 600;
+  border-bottom: 1px solid var(--border);
+}
+.bracket-team:last-child { border-bottom: none; }
+.bracket-team.winner { color: var(--text); background: rgba(245,200,66,0.06); }
+.bracket-team.winner .bracket-score { color: var(--gold); }
+.bracket-flag { font-size: 1.1rem; display: flex; }
+.bracket-score {
+  font-family: var(--font-display); font-size: 1.1rem; text-align: right;
+  color: var(--text-dim);
+}
+
+/* ═══════════════════════════════════════════════════════
    GROUPS
 ════════════════════════════════════════════════════════ */
 #groups { background: var(--bg2); }

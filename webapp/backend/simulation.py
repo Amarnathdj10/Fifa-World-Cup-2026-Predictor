@@ -3,19 +3,30 @@ simulation.py
 Adapter module that wraps the existing Monte Carlo simulation scripts
 with correct path resolution relative to this project.
 """
-
+ 
 import os
 import sys
+import json
 import pandas as pd
 import numpy as np
 import random
-
+ 
 # Resolve the project root (two levels up from webapp/backend/)
 BASE_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
 PREDICTIONS_PATH = os.path.join(BASE_PATH, 'finalmodel', 'final_predictions_2026.csv')
 RANDOM_RESULTS_PATH = os.path.join(BASE_PATH, 'monte_carlo', 'monte_carlo_results_2026.csv')
 SCHEDULED_RESULTS_PATH = os.path.join(BASE_PATH, 'monte_carlo', 'scheduled_results_2026.csv')
-
+BRACKET_RANDOM_PATH = os.path.join(BASE_PATH, 'monte_carlo', 'bracket_random_2026.json')
+BRACKET_SCHEDULED_PATH = os.path.join(BASE_PATH, 'monte_carlo', 'bracket_scheduled_2026.json')
+ 
+# Knockout rounds played after the Round of 32 field is set (stat_key, round display name)
+STAGES_AFTER_R32 = [
+    ('QF', 'Round of 16'),
+    ('SF', 'Quarterfinal'),
+    ('Final', 'Semifinal'),
+    ('Winner', 'Final'),
+]
+ 
 # Official 2026 Groups
 OFFICIAL_GROUPS = {
     'A': ['Mexico', 'South Africa', 'Korea Republic', 'Czech Republic'],
@@ -31,7 +42,7 @@ OFFICIAL_GROUPS = {
     'K': ['Portugal', 'Congo DR', 'Uzbekistan', 'Colombia'],
     'L': ['England', 'Croatia', 'Ghana', 'Panama']
 }
-
+ 
 # Confederation mapping for UI
 CONFEDERATION_MAP = {
     'Australia': 'AFC', 'Iran': 'AFC', 'Iraq': 'AFC', 'Japan': 'AFC',
@@ -51,7 +62,7 @@ CONFEDERATION_MAP = {
     'Norway': 'UEFA', 'Portugal': 'UEFA', 'Scotland': 'UEFA',
     'Spain': 'UEFA', 'Sweden': 'UEFA', 'Switzerland': 'UEFA', 'Turkey': 'UEFA'
 }
-
+ 
 # Flag emoji mapping
 FLAG_MAP = {
     'Argentina': '🇦🇷', 'Australia': '🇦🇺', 'Austria': '🇦🇹',
@@ -71,16 +82,16 @@ FLAG_MAP = {
     'Switzerland': '🇨🇭', 'Tunisia': '🇹🇳', 'Turkey': '🇹🇷',
     'Uruguay': '🇺🇾', 'USA': '🇺🇸', 'Uzbekistan': '🇺🇿'
 }
-
-
+ 
+ 
 def load_teams_df():
     """Load the predictions CSV and compute hybrid strength."""
     df = pd.read_csv(PREDICTIONS_PATH)
     df.columns = [c.strip() for c in df.columns]
     df['Strength'] = df['Elo_Rating'] + df['Predicted_Stage'] * 50
     return df
-
-
+ 
+ 
 def get_teams_data():
     """Return enriched team list for the API."""
     df = load_teams_df()
@@ -98,8 +109,8 @@ def get_teams_data():
     # Sort by strength descending
     teams.sort(key=lambda x: x['strength'], reverse=True)
     return teams
-
-
+ 
+ 
 def get_groups_data():
     """Return official group assignments enriched with team stats."""
     teams_df = load_teams_df()
@@ -117,10 +128,10 @@ def get_groups_data():
                 'confederation': CONFEDERATION_MAP.get(t, 'UEFA'),
             })
     return groups
-
-
+ 
+ 
 # ─── Simulation Core ─────────────────────────────────────────────────────────
-
+ 
 def _simulate_match(s1, s2, knockout=False):
     base = 1.4
     adj = (s1 - s2) / 100 * 0.2
@@ -137,8 +148,8 @@ def _simulate_match(s1, s2, knockout=False):
             p = 1 / (1 + 10 ** (-(s1 - s2) / 400))
             return g1, g2, (0 if random.random() < p else 1)
         return g1, g2, 2
-
-
+ 
+ 
 def _simulate_group(teams):
     stats = {t['Team']: {'points': 0, 'gf': 0, 'ga': 0, 'td': t} for t in teams}
     for i in range(len(teams)):
@@ -160,22 +171,67 @@ def _simulate_group(teams):
                     key=lambda x: (x['points'], x['gf'] - x['ga'], x['gf']),
                     reverse=True)
     return ranked
-
-
+ 
+ 
+def _match_record(t1, t2, g1, g2, winner):
+    return {
+        'team1': t1['Team'], 'team2': t2['Team'],
+        'score1': int(g1), 'score2': int(g2),
+        'winner': winner['Team'],
+        'flag1': FLAG_MAP.get(t1['Team'], '🏳️'),
+        'flag2': FLAG_MAP.get(t2['Team'], '🏳️'),
+    }
+ 
+ 
+def _play_knockout(current, stats, stage_defs, capture=None):
+    """Plays consecutive-pair knockout rounds, optionally recording match detail."""
+    for stat_key, round_name in stage_defs:
+        winners = []
+        round_matches = [] if capture is not None else None
+        for k in range(0, len(current), 2):
+            t1, t2 = current[k], current[k + 1]
+            g1, g2, w = _simulate_match(t1['Strength'], t2['Strength'], knockout=True)
+            winner = t1 if w == 0 else t2
+            winners.append(winner)
+            stats[winner['Team']][stat_key] += 1
+            if capture is not None:
+                round_matches.append(_match_record(t1, t2, g1, g2, winner))
+        if capture is not None:
+            capture.append({'round': round_name, 'matches': round_matches})
+        current = winners
+    return current
+ 
+ 
+def save_bracket(mode, bracket):
+    path = BRACKET_RANDOM_PATH if mode == 'random' else BRACKET_SCHEDULED_PATH
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    with open(path, 'w') as f:
+        json.dump(bracket, f)
+ 
+ 
+def load_bracket(mode='random'):
+    path = BRACKET_RANDOM_PATH if mode == 'random' else BRACKET_SCHEDULED_PATH
+    if not os.path.exists(path):
+        return []
+    with open(path) as f:
+        return json.load(f)
+ 
+ 
 def run_random_simulation(num_simulations=1000, progress_cb=None):
     """Random-seeded Monte Carlo (groups drawn randomly)."""
     df = load_teams_df()
     team_names = df['Team'].tolist()
     stats = {t: {'R32': 0, 'R16': 0, 'QF': 0, 'SF': 0, 'Final': 0, 'Winner': 0}
              for t in team_names}
-
+    sample_bracket = None
+ 
     for i in range(num_simulations):
         teams = df.sample(frac=1).to_dict('records')
         groups = {}
         for gi in range(12):
             gname = chr(65 + gi)
             groups[gname] = teams[gi * 4:(gi + 1) * 4]
-
+ 
         # Group stage
         thirds = []
         advancers = []
@@ -184,42 +240,40 @@ def run_random_simulation(num_simulations=1000, progress_cb=None):
             advancers.append(ranked[0]['td'])
             advancers.append(ranked[1]['td'])
             thirds.append(ranked[2])
-
+ 
         best_thirds = sorted(thirds, key=lambda x: (x['points'], x['gf'] - x['ga'], x['gf']),
                              reverse=True)[:8]
         r32 = advancers + [t['td'] for t in best_thirds]
-
-        # Knockout
+ 
+        for t in r32:
+            stats[t['Team']]['R32'] += 1
+ 
+        # Knockout — Round of 32 through Final, all actually simulated
         random.shuffle(r32)
-        current = r32
-        for stage in ['R16', 'QF', 'SF', 'Final']:
-            winners = []
-            for k in range(0, len(current), 2):
-                t1, t2 = current[k], current[k + 1]
-                _, _, w = _simulate_match(t1['Strength'], t2['Strength'], knockout=True)
-                winner = t1 if w == 0 else t2
-                winners.append(winner)
-                stats[winner['Team']][stage] += 1
-            current = winners
-
-        if current:
-            stats[current[0]['Team']]['Winner'] += 1
-
+        capture = [] if i == 0 else None
+        stage_defs = [('R16', 'Round of 32')] + STAGES_AFTER_R32
+        _play_knockout(r32, stats, stage_defs, capture)
+        if capture is not None:
+            sample_bracket = capture
+ 
         if progress_cb and (i + 1) % max(1, num_simulations // 20) == 0:
             progress_cb(int((i + 1) / num_simulations * 100))
-
+ 
+    if sample_bracket:
+        save_bracket('random', sample_bracket)
+ 
     results = []
     for team, s in stats.items():
         row = {'Team': team}
         for stage in ['R32', 'R16', 'QF', 'SF', 'Final', 'Winner']:
             row[f'{stage}_prob'] = round(s[stage] / num_simulations, 4)
         results.append(row)
-
+ 
     df_out = pd.DataFrame(results).sort_values('Winner_prob', ascending=False)
     df_out.to_csv(RANDOM_RESULTS_PATH, index=False)
     return df_out
-
-
+ 
+ 
 def run_scheduled_simulation(num_simulations=1000, progress_cb=None):
     """Official-bracket Monte Carlo."""
     df = load_teams_df()
@@ -227,7 +281,8 @@ def run_scheduled_simulation(num_simulations=1000, progress_cb=None):
     team_names = df['Team'].tolist()
     stats = {t: {'R32': 0, 'R16': 0, 'QF': 0, 'SF': 0, 'Final': 0, 'Winner': 0}
              for t in team_names}
-
+    sample_bracket = None
+ 
     for i in range(num_simulations):
         groups = {}
         for gname, members in OFFICIAL_GROUPS.items():
@@ -236,7 +291,7 @@ def run_scheduled_simulation(num_simulations=1000, progress_cb=None):
                 d = team_data[name].copy()
                 d['Team'] = name
                 groups[gname].append(d)
-
+ 
         # Group stage
         positions = {}
         thirds = []
@@ -245,15 +300,15 @@ def run_scheduled_simulation(num_simulations=1000, progress_cb=None):
             positions[f'{gname}1'] = ranked[0]['td']
             positions[f'{gname}2'] = ranked[1]['td']
             thirds.append(ranked[2])
-
+ 
         best_thirds = sorted(thirds, key=lambda x: (x['points'], x['gf'] - x['ga'], x['gf']),
                              reverse=True)[:8]
         best_thirds_teams = [t['td'] for t in best_thirds]
-
+ 
         # Mark all R32 entrants
         for t in list(positions.values()) + best_thirds_teams:
             stats[t['Team']]['R32'] += 1
-
+ 
         # R32 bracket
         r32_matches = [
             (positions['A1'], best_thirds_teams[0]),
@@ -273,41 +328,39 @@ def run_scheduled_simulation(num_simulations=1000, progress_cb=None):
             (positions['I2'], positions['J2']),
             (positions['K2'], positions['L2']),
         ]
+        capture_r32 = [] if i == 0 else None
         current = []
         for t1, t2 in r32_matches:
-            _, _, w = _simulate_match(t1['Strength'], t2['Strength'], knockout=True)
+            g1, g2, w = _simulate_match(t1['Strength'], t2['Strength'], knockout=True)
             winner = t1 if w == 0 else t2
             current.append(winner)
             stats[winner['Team']]['R16'] += 1
-
-        for stage in ['QF', 'SF', 'Final']:
-            winners = []
-            for k in range(0, len(current), 2):
-                t1, t2 = current[k], current[k + 1]
-                _, _, w = _simulate_match(t1['Strength'], t2['Strength'], knockout=True)
-                winner = t1 if w == 0 else t2
-                winners.append(winner)
-                stats[winner['Team']][stage] += 1
-            current = winners
-
-        if current:
-            stats[current[0]['Team']]['Winner'] += 1
-
+            if capture_r32 is not None:
+                capture_r32.append(_match_record(t1, t2, g1, g2, winner))
+ 
+        capture = [{'round': 'Round of 32', 'matches': capture_r32}] if capture_r32 is not None else None
+        _play_knockout(current, stats, STAGES_AFTER_R32, capture)
+        if capture is not None:
+            sample_bracket = capture
+ 
         if progress_cb and (i + 1) % max(1, num_simulations // 20) == 0:
             progress_cb(int((i + 1) / num_simulations * 100))
-
+ 
+    if sample_bracket:
+        save_bracket('scheduled', sample_bracket)
+ 
     results = []
     for team, s in stats.items():
         row = {'Team': team}
         for stage in ['R32', 'R16', 'QF', 'SF', 'Final', 'Winner']:
             row[f'{stage}_prob'] = round(s[stage] / num_simulations, 4)
         results.append(row)
-
+ 
     df_out = pd.DataFrame(results).sort_values('Winner_prob', ascending=False)
     df_out.to_csv(SCHEDULED_RESULTS_PATH, index=False)
     return df_out
-
-
+ 
+ 
 def load_results(mode='random'):
     """Load cached simulation results from CSV."""
     path = RANDOM_RESULTS_PATH if mode == 'random' else SCHEDULED_RESULTS_PATH
@@ -322,3 +375,4 @@ def load_results(mode='random'):
         r['flag'] = FLAG_MAP.get(t, '🏳️')
         r['confederation'] = CONFEDERATION_MAP.get(t, '?')
     return records
+ 

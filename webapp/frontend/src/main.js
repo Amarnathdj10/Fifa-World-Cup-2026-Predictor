@@ -2,9 +2,9 @@
  * main.js — FIFA World Cup 2026 Predictor Frontend
  * All UI logic: API calls, chart rendering, simulation control, canvas BG
  */
-
+ 
 const API = import.meta.env.VITE_API_BASE || '/api';
-
+ 
 const TEAM_CODES = {
   'Argentina': 'ar', 'Australia': 'au', 'Austria': 'at',
   'Algeria': 'dz', 'Belgium': 'be', 'Bosnia and Herzegovina': 'ba',
@@ -23,7 +23,7 @@ const TEAM_CODES = {
   'Switzerland': 'ch', 'Tunisia': 'tn', 'Turkey': 'tr',
   'Uruguay': 'uy', 'USA': 'us', 'Uzbekistan': 'uz'
 };
-
+ 
 function cleanCountryName(name) {
   if (!name) return '';
   const mapping = {
@@ -32,7 +32,7 @@ function cleanCountryName(name) {
   };
   return mapping[name] || name;
 }
-
+ 
 function getFlagHtml(teamName, className = '') {
   const code = TEAM_CODES[teamName];
   if (code) {
@@ -40,7 +40,7 @@ function getFlagHtml(teamName, className = '') {
   }
   return '🏳️';
 }
-
+ 
 // ── State ────────────────────────────────────────────────────────────────────
 const state = {
   mode: 'random',
@@ -52,8 +52,10 @@ const state = {
   groups: {},
   jobId: null,
   polling: null,
+  bracket: [],
+  bracketRoundIdx: 0,
 };
-
+ 
 // ── DOM refs ─────────────────────────────────────────────────────────────────
 const $ = id => document.getElementById(id);
 const btnRandom    = $('btn-mode-random');
@@ -69,18 +71,22 @@ const podiumEl     = $('podium');
 const chartEl      = $('results-chart');
 const groupsGrid   = $('groups-grid');
 const teamsGrid    = $('teams-grid');
-
+const bracketTabs  = $('bracket-round-tabs');
+const bracketBody  = $('bracket-matches');
+const bracketPrev  = $('bracket-prev');
+const bracketNext  = $('bracket-next');
+ 
 // ── Animated Canvas Background ───────────────────────────────────────────────
 function initCanvas() {
   const canvas = $('bg-canvas');
   const ctx = canvas.getContext('2d');
   let W, H, particles = [];
-
+ 
   function resize() {
     W = canvas.width  = window.innerWidth;
     H = canvas.height = window.innerHeight;
   }
-
+ 
   function mkParticle() {
     return {
       x: Math.random() * W,
@@ -96,12 +102,12 @@ function initCanvas() {
           : `rgba(240,242,255,`,
     };
   }
-
+ 
   function init() {
     resize();
     particles = Array.from({ length: 120 }, mkParticle);
   }
-
+ 
   function draw() {
     ctx.clearRect(0, 0, W, H);
     for (const p of particles) {
@@ -115,12 +121,12 @@ function initCanvas() {
     }
     requestAnimationFrame(draw);
   }
-
+ 
   window.addEventListener('resize', resize);
   init();
   draw();
 }
-
+ 
 // ── Slider ───────────────────────────────────────────────────────────────────
 function initSlider() {
   function update() {
@@ -133,7 +139,7 @@ function initSlider() {
   slider.addEventListener('input', update);
   update();
 }
-
+ 
 // ── Mode toggle ──────────────────────────────────────────────────────────────
 function initModeToggle() {
   [btnRandom, btnScheduled].forEach(btn => {
@@ -143,10 +149,11 @@ function initModeToggle() {
       btnScheduled.classList.toggle('active', state.mode === 'scheduled');
       // Load cached results for this mode
       loadCachedResults();
+      loadBracket();
     });
   });
 }
-
+ 
 // ── Stage tabs ────────────────────────────────────────────────────────────────
 function initStageTabs() {
   document.querySelectorAll('.stage-tab').forEach(tab => {
@@ -158,7 +165,7 @@ function initStageTabs() {
     });
   });
 }
-
+ 
 // ── Conf filter ───────────────────────────────────────────────────────────────
 function initConfFilter() {
   document.querySelectorAll('.conf-btn').forEach(btn => {
@@ -170,7 +177,7 @@ function initConfFilter() {
     });
   });
 }
-
+ 
 // ── Toast ─────────────────────────────────────────────────────────────────────
 function showToast(msg, type = 'info') {
   const t = document.createElement('div');
@@ -179,14 +186,14 @@ function showToast(msg, type = 'info') {
   document.body.appendChild(t);
   setTimeout(() => t.remove(), 4000);
 }
-
+ 
 // ── API helpers ───────────────────────────────────────────────────────────────
 async function apiFetch(path, opts = {}) {
   const res = await fetch(API + path, opts);
   if (!res.ok) throw new Error(`API ${path} → ${res.status}`);
   return res.json();
 }
-
+ 
 // ── Load teams ────────────────────────────────────────────────────────────────
 async function loadTeams() {
   try {
@@ -197,7 +204,7 @@ async function loadTeams() {
     console.warn('teams fetch failed', e);
   }
 }
-
+ 
 // ── Load groups ───────────────────────────────────────────────────────────────
 async function loadGroups() {
   try {
@@ -208,7 +215,7 @@ async function loadGroups() {
     console.warn('groups fetch failed', e);
   }
 }
-
+ 
 // ── Load cached results ───────────────────────────────────────────────────────
 async function loadCachedResults() {
   try {
@@ -223,17 +230,88 @@ async function loadCachedResults() {
     console.warn('results fetch failed', e);
   }
 }
-
+ 
+// ── Bracket ───────────────────────────────────────────────────────────────────
+async function loadBracket() {
+  try {
+    const endpoint = state.mode === 'scheduled' ? '/bracket/scheduled' : '/bracket/random';
+    const data = await apiFetch(endpoint);
+    state.bracket = data.bracket || [];
+    state.bracketRoundIdx = Math.min(state.bracketRoundIdx, Math.max(0, state.bracket.length - 1));
+    renderBracketTabs();
+    renderBracketRound();
+  } catch (e) {
+    console.warn('bracket fetch failed', e);
+  }
+}
+ 
+function renderBracketTabs() {
+  if (!state.bracket.length) { bracketTabs.innerHTML = ''; return; }
+  bracketTabs.innerHTML = state.bracket.map((r, i) => `
+    <button class="bracket-tab ${i === state.bracketRoundIdx ? 'active' : ''}" data-idx="${i}">${r.round}</button>
+  `).join('');
+  bracketTabs.querySelectorAll('.bracket-tab').forEach(btn => {
+    btn.addEventListener('click', () => {
+      state.bracketRoundIdx = +btn.dataset.idx;
+      renderBracketTabs();
+      renderBracketRound();
+    });
+  });
+}
+ 
+function renderBracketRound() {
+  if (!state.bracket.length) {
+    bracketBody.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-state-icon">🏆</div>
+        <div class="empty-state-text">Run a simulation to generate a bracket.</div>
+      </div>`;
+    return;
+  }
+  const round = state.bracket[state.bracketRoundIdx];
+  bracketBody.innerHTML = round.matches.map((m, i) => `
+    <div class="bracket-match anim-fade-up" style="animation-delay:${i * 0.03}s">
+      <div class="bracket-team ${m.winner === m.team1 ? 'winner' : ''}">
+        <span class="bracket-flag">${getFlagHtml(m.team1)}</span>
+        <span class="bracket-team-name">${cleanCountryName(m.team1)}</span>
+        <span class="bracket-score">${m.score1}</span>
+      </div>
+      <div class="bracket-team ${m.winner === m.team2 ? 'winner' : ''}">
+        <span class="bracket-flag">${getFlagHtml(m.team2)}</span>
+        <span class="bracket-team-name">${cleanCountryName(m.team2)}</span>
+        <span class="bracket-score">${m.score2}</span>
+      </div>
+    </div>
+  `).join('');
+}
+ 
+function initBracketNav() {
+  bracketPrev.addEventListener('click', () => {
+    if (state.bracketRoundIdx > 0) {
+      state.bracketRoundIdx--;
+      renderBracketTabs();
+      renderBracketRound();
+    }
+  });
+  bracketNext.addEventListener('click', () => {
+    if (state.bracketRoundIdx < state.bracket.length - 1) {
+      state.bracketRoundIdx++;
+      renderBracketTabs();
+      renderBracketRound();
+    }
+  });
+}
+ 
 // ── Run simulation ────────────────────────────────────────────────────────────
 async function runSimulation() {
   if (state.jobId) return;
-
+ 
   btnRun.disabled = true;
   btnLabel.textContent = 'LAUNCHING…';
   btnRun.classList.add('running');
   progressWrap.classList.remove('hidden');
   setProgress(0);
-
+ 
   try {
     const data = await apiFetch('/simulate', {
       method: 'POST',
@@ -248,24 +326,24 @@ async function runSimulation() {
     resetRunBtn();
   }
 }
-
+ 
 function setProgress(pct) {
   progressBar.style.width = pct + '%';
   progressPct.textContent = pct + '%';
-
+ 
   // Light up steps
   const steps = document.querySelectorAll('.step');
   steps.forEach((s, i) => {
     s.classList.toggle('active', pct >= i * 25);
   });
 }
-
+ 
 function pollJob() {
   state.polling = setInterval(async () => {
     try {
       const data = await apiFetch(`/simulate/status/${state.jobId}`);
       setProgress(data.progress || 0);
-
+ 
       if (data.status === 'done') {
         clearInterval(state.polling);
         state.jobId = null;
@@ -276,6 +354,7 @@ function pollJob() {
           resetRunBtn();
           renderPodium();
           renderChart();
+          loadBracket();
           showToast(`✅ Simulation complete! ${state.numSims.toLocaleString()} tournaments run.`, 'success');
         }, 600);
       } else if (data.status === 'error') {
@@ -292,19 +371,19 @@ function pollJob() {
     }
   }, 800);
 }
-
+ 
 function resetRunBtn() {
   btnRun.disabled = false;
   btnRun.classList.remove('running');
   btnLabel.textContent = 'RUN SIMULATION';
 }
-
+ 
 // ── Render Podium ─────────────────────────────────────────────────────────────
 function renderPodium() {
   const top3 = state.results.slice(0, 3);
   const medals = ['🥇', '🥈', '🥉'];
   const rankClass = ['rank-1', 'rank-2', 'rank-3'];
-
+ 
   podiumEl.innerHTML = top3.map((t, i) => `
     <div class="podium-card ${rankClass[i]} anim-fade-up" style="animation-delay:${i*0.12}s">
       <div class="podium-medal">${medals[i]}</div>
@@ -316,19 +395,19 @@ function renderPodium() {
     </div>
   `).join('');
 }
-
+ 
 // ── Render Chart ──────────────────────────────────────────────────────────────
 function renderChart() {
   let data = [...state.results];
-
+ 
   // Confederation filter
   if (state.confFilter !== 'ALL') {
     data = data.filter(t => t.confederation === state.confFilter);
   }
-
+ 
   // Sort by current stage
   data.sort((a, b) => (b[state.stage] || 0) - (a[state.stage] || 0));
-
+ 
   if (!data.length) {
     chartEl.innerHTML = `
       <div class="empty-state">
@@ -337,9 +416,9 @@ function renderChart() {
       </div>`;
     return;
   }
-
+ 
   const maxProb = data[0][state.stage] || 1;
-
+ 
   chartEl.innerHTML = data.map((t, idx) => {
     const prob = t[state.stage] || 0;
     const pct = maxProb > 0 ? (prob / maxProb) * 100 : 0;
@@ -360,7 +439,7 @@ function renderChart() {
         <span class="chart-pct">${(prob * 100).toFixed(1)}%</span>
       </div>`;
   }).join('');
-
+ 
   // Animate bars in
   requestAnimationFrame(() => {
     chartEl.querySelectorAll('.chart-bar').forEach((bar, i) => {
@@ -370,7 +449,7 @@ function renderChart() {
     });
   });
 }
-
+ 
 // ── Render Groups ─────────────────────────────────────────────────────────────
 function renderGroupsGrid() {
   const entries = Object.entries(state.groups);
@@ -393,7 +472,7 @@ function renderGroupsGrid() {
     </div>
   `).join('');
 }
-
+ 
 // ── Render Teams Grid ─────────────────────────────────────────────────────────
 function renderTeamsGrid() {
   teamsGrid.innerHTML = state.teams.map((t, i) => `
@@ -415,7 +494,7 @@ function renderTeamsGrid() {
     </div>
   `).join('');
 }
-
+ 
 // ── Navbar scroll effect ──────────────────────────────────────────────────────
 function initNavbar() {
   const nav = $('navbar');
@@ -425,7 +504,7 @@ function initNavbar() {
       : 'rgba(5,6,15,0.85)';
   });
 }
-
+ 
 // ── Intersection observer for section animations ───────────────────────────────
 function initScrollAnimations() {
   const io = new IntersectionObserver((entries) => {
@@ -439,10 +518,10 @@ function initScrollAnimations() {
       }
     });
   }, { threshold: 0.1 });
-
+ 
   document.querySelectorAll('section').forEach(s => io.observe(s));
 }
-
+ 
 // ── Empty states while loading ────────────────────────────────────────────────
 function showLoadingStates() {
   chartEl.innerHTML = `
@@ -457,7 +536,7 @@ function showLoadingStates() {
     `<div class="skeleton" style="height:160px;border-radius:14px;"></div>`
   ).join('');
 }
-
+ 
 // ── Boot ──────────────────────────────────────────────────────────────────────
 async function init() {
   initCanvas();
@@ -466,17 +545,28 @@ async function init() {
   initStageTabs();
   initConfFilter();
   initNavbar();
-
+  initBracketNav();
+ 
   btnRun.addEventListener('click', runSimulation);
-
+ 
   showLoadingStates();
-
+ 
   // Load all data in parallel
   await Promise.all([
     loadTeams(),
     loadGroups(),
     loadCachedResults(),
+    loadBracket(),
   ]);
 }
-
+ 
 init();
+ 
+
+
+
+
+
+
+
+

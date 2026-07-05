@@ -30,6 +30,7 @@
     <div class="nav-links">
       <a href="#simulator" class="nav-link">Simulator</a>
       <a href="#results" class="nav-link">Results</a>
+      <a href="#bracket" class="nav-link">Bracket</a>
       <a href="#groups" class="nav-link">Groups</a>
       <a href="#teams" class="nav-link">Teams</a>
     </div>
@@ -132,6 +133,7 @@
         <button class="stage-tab" data-stage="SF_prob">🔝 Semi-Final</button>
         <button class="stage-tab" data-stage="QF_prob">⚡ Quarter-Final</button>
         <button class="stage-tab" data-stage="R16_prob">🏅 Round of 16</button>
+        <button class="stage-tab" data-stage="R32_prob">🎯 Round of 32</button>
       </div>
       <div class="conf-filter" id="conf-filter">
         <button class="conf-btn active" data-conf="ALL">All</button>
@@ -147,6 +149,20 @@
     <div class="chart-container glass" id="chart-container">
       <div id="results-chart" class="results-chart"></div>
     </div>
+  </section>
+
+  <!-- ── BRACKET ─────────────────────────────────────────────── -->
+  <section id="bracket">
+    <div class="section-header">
+      <h2 class="section-title">KNOCKOUT <span class="accent">BRACKET</span></h2>
+      <p class="section-sub">Round-by-round matchups from the most recent simulation run.</p>
+    </div>
+    <div class="bracket-controls">
+      <button id="bracket-prev" class="bracket-nav-btn">‹</button>
+      <div id="bracket-round-tabs" class="bracket-round-tabs"></div>
+      <button id="bracket-next" class="bracket-nav-btn">›</button>
+    </div>
+    <div id="bracket-matches" class="bracket-matches glass"></div>
   </section>
 
   <!-- ── GROUPS ──────────────────────────────────────────────── -->
