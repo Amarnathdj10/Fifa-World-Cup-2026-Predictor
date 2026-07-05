@@ -136,7 +136,7 @@ Then open the local Vite URL shown in the terminal.
 
 This repository is provided as a project demo and currently has no formal open-source license applied.
 =======
-Live demo: https://fifa-world-cup-2026-predictor-nu.vercel.app
+Live demo: https://fifa-world-cup-2026-predictor-zeta.vercel.app
 
 A data-driven web application that predicts FIFA World Cup 2026 match outcomes and tournament progression using machine learning. This project combines Python data processing and modeling with a modern web frontend to let users explore predictions and match simulations.
 
