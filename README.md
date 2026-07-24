@@ -2,7 +2,7 @@
 
 > End-to-end ML + simulation pipeline to forecast the FIFA World Cup 2026 — featuring XGBoost team capability modelling, Poisson match simulation, and 10,000-run Monte Carlo tournament prediction.
 
-🔴 **[Live Demo](https://fifa-world-cup-2026-predictor-nu.vercel.app)**
+🔴 **[Live Demo](https://fifa-world-cup-2026-predictor-zeta.vercel.app/)**
 
 ---
 
@@ -14,20 +14,6 @@ The 2026 FIFA World Cup introduced an expanded 48-team format, making traditiona
 2. **Simulation Stage** — A Poisson-based match simulator runs 10,000 Monte Carlo iterations of the official bracket to estimate win probabilities for every team.
 
 The result: data-driven tournament winner probabilities grounded in historical performance, Elo ratings, and squad statistics.
-
----
-
-## 🏆 Predictions — Official 2026 Bracket
-
-| Rank | Team | Win Probability | Notes |
-|------|------|----------------|-------|
-| 🥇 1 | 🇪🇸 Spain | **32.6%** | Favorable bracket path + peak Elo 2172 |
-| 🥈 2 | 🇫🇷 France | 11.8% | Highest ML-predicted capability (3.59) |
-| 🥉 3 | 🇦🇷 Argentina | 11.8% | Defending champions |
-| 4 | 🏴󠁧󠁢󠁥󠁮󠁧󠁿 England | 9.6% | |
-| 5 | 🇨🇴 Colombia | 5.9% | Top South American dark horse |
-
-> Simulated across 10,000 iterations using the official group draw and knockout bracket.
 
 ---
 
@@ -67,11 +53,6 @@ Three models evaluated using **Leave-One-Group-Out Cross Validation** (held out 
 | **XGBoost** ✅ | **0.676** | **1.075** | **0.450** |
 
 **XGBoost selected** — average error of less than one round in predicting exit stage.
-
-Top ML-ranked teams by predicted capability:
-- 🇨🇴 Colombia: 3.60
-- 🇫🇷 France: 3.59
-- 🇺🇾 Uruguay: 3.47
 
 ### Stage 3 — Monte Carlo Simulation
 
@@ -146,15 +127,6 @@ python scheduled_bracket_simulation.py
 | `squad_value` | Transfer market valuation of squad (in €M) |
 | `attack_efficiency` | Goals scored per shot on target |
 | `elo_host_boost` | Elo adjustment for host nations (USA, Canada, Mexico) |
-
----
-
-## 🔭 Future Work
-
-- [ ] Incorporate real-time squad injury/availability data
-- [ ] Add player-level ratings (FIFA/Sofascore) as additional features
-- [ ] Bayesian updating of probabilities as group stage results come in
-- [ ] Live dashboard updating predictions round-by-round
 
 ---
 
